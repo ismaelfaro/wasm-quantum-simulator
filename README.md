@@ -4,6 +4,8 @@ Quantum Simulator in WebAssembly for Classical Developers 💻
 This is a very basic implementation of a Quantum Simulator in AssemblyScript to learn the basic component.
 Allow to create your Quantum circuits with the basic Quantum Gates, and you can execute it using plain python
 
+more info about AssemblyScript: https://www.assemblyscript.org/introduction.html
+
 # Components
 - Quantum Circuit Class:
     - Quantum Gates: x, rx, ry, rz, z, y, h, cx, m
