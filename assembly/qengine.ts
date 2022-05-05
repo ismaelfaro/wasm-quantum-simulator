@@ -7,8 +7,8 @@ class Gate{
   name: string;
   qubit: i32;
   target: i32;
-  theta: f32;
-  constructor(name:string, qubit:i32, target:i32, theta:f32){
+  theta: f64;
+  constructor(name:string, qubit:i32, target:i32, theta:f64){
     this.name = name;
     this.qubit = qubit;
     this.target = target;
@@ -35,9 +35,9 @@ export class QuantumCircuit {
 
     x(qubit:i32):void {this.addGate(new Gate('x',qubit,0,0.0));}
 
-    rx(qubit:i32, theta:f32):void { this.addGate(new Gate('rx',qubit, 0, theta));}
+    rx(qubit:i32, theta:f64):void { this.addGate(new Gate('rx',qubit, 0, theta));}
 
-    ry(qubit:i32, theta:f32):void {
+    ry(qubit:i32, theta:f64):void {
         this.rx(qubit,pi/2);
         this.h(qubit);
         this.rx(qubit,theta);
@@ -45,7 +45,7 @@ export class QuantumCircuit {
         this.rx(qubit,-pi/2);
     }
 
-    rz(qubit:i32, theta:f32):void {
+    rz(qubit:i32, theta:f64):void {
         this.h(qubit);
         this.rx(qubit,theta);
         this.h(qubit);
@@ -69,7 +69,7 @@ export class QuantumSimulator{
     circuit: Array<Gate>;
     Qubits: i32;
     Bits: i32;
-    stateVector: Array<Array<f32>>
+    stateVector: Array<Array<f64>>
 
     constructor(quantumCircuit:QuantumCircuit){
         this.circuit = quantumCircuit.circuit;
@@ -85,19 +85,19 @@ export class QuantumSimulator{
     }
 
     
-    superpose(x:Array<f32>,y:Array<f32>):Array<Array<f32>>{
+    superpose(x:Array<f64>,y:Array<f64>):Array<Array<f64>>{
         return [[r2*(x[0]+y[0]),r2*(x[1]+y[1])],
                 [r2*(x[0]-y[0]),r2*(x[1]-y[1])]];
     };
 
-    turn(x:Array<f32>,y:Array<f32>,theta:f32):Array<Array<f32>>{
-        let part1:Array<f32> = [x[0]*Math.cos(theta/2)+y[1]*Math.sin(theta/2),x[1]*Math.cos(theta/2)-y[0]*Math.sin(theta/2)]
-        let part2:Array<f32> = [y[0]*Math.cos(theta/2)+x[1]*Math.sin(theta/2),y[1]*Math.cos(theta/2)-x[0]*Math.sin(theta/2)]
+    turn(x:Array<f64>,y:Array<f64>,theta:f64):Array<Array<f64>>{
+        let part1:Array<f64> = [x[0]*Math.cos(theta/2)+y[1]*Math.sin(theta/2),x[1]*Math.cos(theta/2)-y[0]*Math.sin(theta/2)]
+        let part2:Array<f64> = [y[0]*Math.cos(theta/2)+x[1]*Math.sin(theta/2),y[1]*Math.cos(theta/2)-x[0]*Math.sin(theta/2)]
         return [part1, part2]
     };
 
     probability(shots:i32):Array<String> {
-        let probabilities:Array<f32> = []
+        let probabilities:Array<f64> = []
         this.stateVector.forEach((value, index) =>{
             let realPart = value[0];
             let imaginaryPart = value[1];
