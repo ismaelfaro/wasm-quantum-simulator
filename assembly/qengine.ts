@@ -129,7 +129,7 @@ class QuantumSimulator{
         return [ part1, part2]
     };
 
-    run(format:String, shots:i32){
+    run(format:String, shots:i32) {
         
         format = format || "statevector";
         shots = shots || 1024;
@@ -195,21 +195,18 @@ class QuantumSimulator{
             return this.probability(shots);
         } else if(format == 'counts'){
             let probabilities = this.probability(shots);
-            let counts:Object = {};
+            let counts = new Map<string,i32>()
             probabilities.forEach((value:string, index)=>{
-                if(value in counts){
-                    counts[value]+=1;
+                if(counts.has(value)){
+                    counts.set(value,counts.get(value)+1)
                 } else {
-                    counts[value]=1;
+                    counts.set(value,1)
                 }
             });
-            const orderedCounts = {};
-            Object.keys(counts).sort().forEach(function(key) {
-                orderedCounts[key] = counts[key];
-            });
-            return orderedCounts;
+            return counts;
         }else{
             console.log('error: Valid output format [state vector, counts, memory]')
         }
+        return {"error":"none"}
     }
 };
