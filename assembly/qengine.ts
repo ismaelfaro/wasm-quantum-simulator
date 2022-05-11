@@ -1,6 +1,9 @@
-// define some constants to use in the APP.
+// define some constants/types to use in the APP.
 const r2=0.70710678118;
 const pi=Math.PI;
+class Complex {
+  constructor(public r: f64, public i:f64) {}
+}
 
 // Define the Gate
 class Gate{
@@ -13,18 +16,16 @@ export class QuantumCircuit {
     circuit: Array<Gate>;
 
     constructor(public Qubits: i32){
-        if (Qubits <= 0 ){
-            console.error("Number of Qubits need to ne more than 0");
-        } 
+        if (Qubits <= 0 ){ console.error("Number of Qubits need to ne more than 0") } 
         this.Bits = Qubits;
         this.circuit = [];
     }
 
-    addGate(gate:Gate):void {this.circuit.push(gate);}
+    addGate(gate:Gate):void {this.circuit.push(gate)}
 
-    public x(qubit:i32):void {this.addGate(new Gate('x',qubit,0,0.0));}
+    public x(qubit:i32):void {this.addGate(new Gate('x',qubit,0,0.0))}
 
-    public rx(qubit:i32, theta:f64):void { this.addGate(new Gate('rx',qubit, 0, theta));}
+    public rx(qubit:i32, theta:f64):void { this.addGate(new Gate('rx',qubit, 0, theta))}
 
     public ry(qubit:i32, theta:f64):void {
         this.rx(qubit,pi/2);
@@ -35,15 +36,15 @@ export class QuantumCircuit {
     }
 
     public rz(qubit:i32, theta:f64):void {
-        this.h(qubit);
-        this.rx(qubit,theta);
-        this.h(qubit);
+        this.h(qubit)
+        this.rx(qubit,theta)
+        this.h(qubit)
     }
 
     public z(qubit:i32):void { this.rz(qubit,pi) }
 
     public y(qubit:i32):void {
-        this.rz(qubit,pi);
+        this.rz(qubit,pi)
         this.x(qubit)
     }
 
@@ -52,10 +53,6 @@ export class QuantumCircuit {
     public cx(qubit:i32,target:i32):void { this.addGate(new Gate('cx',qubit,target,0.0)); }
 
     public m(qubit:i32,target:i32):void { this.addGate(new Gate('m',qubit,target,0.0)); }
-}
-
-class Complex {
-  constructor(public r: f64, public i:f64) {}
 }
 
 export class QuantumSimulator{

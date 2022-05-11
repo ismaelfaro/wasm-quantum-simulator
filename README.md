@@ -48,7 +48,6 @@ more info about AssemblyScript: https://www.assemblyscript.org/introduction.html
 
 # TODO:
 - Integrate with https://github.com/JavaFXpert/grok-bloch bloch sphere visualization
-- Integrate with https://github.ibm.com/Ismael-Faro1/box-phase-visualization
 
 # references
 Inspired in MicroQiskit python implementation https://github.com/qiskit-community/MicroQiskit by James Wootton
