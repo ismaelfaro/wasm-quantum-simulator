@@ -4,40 +4,29 @@ const pi=Math.PI;
 
 // Define the Gate
 class Gate{
-  name: string;
-  qubit: i32;
-  target: i32;
-  theta: f64;
-  constructor(name:string, qubit:i32, target:i32, theta:f64){
-    this.name = name;
-    this.qubit = qubit;
-    this.target = target;
-    this.theta = theta;
-  }
+  constructor(public name:string, public qubit:i32, public target:i32, public theta:f64){}
 }
 
 // Define the Quantum Circuit
 export class QuantumCircuit {
-    Qubits: i32;
     Bits: i32;
     circuit: Array<Gate>;
 
-    constructor(Qubits: i32){
+    constructor(public Qubits: i32){
         if (Qubits <= 0 ){
             console.error("Number of Qubits need to ne more than 0");
         } 
-        this.Qubits = Qubits;
         this.Bits = Qubits;
         this.circuit = [];
     }
 
     addGate(gate:Gate):void {this.circuit.push(gate);}
 
-    x(qubit:i32):void {this.addGate(new Gate('x',qubit,0,0.0));}
+    public x(qubit:i32):void {this.addGate(new Gate('x',qubit,0,0.0));}
 
-    rx(qubit:i32, theta:f64):void { this.addGate(new Gate('rx',qubit, 0, theta));}
+    public rx(qubit:i32, theta:f64):void { this.addGate(new Gate('rx',qubit, 0, theta));}
 
-    ry(qubit:i32, theta:f64):void {
+    public ry(qubit:i32, theta:f64):void {
         this.rx(qubit,pi/2);
         this.h(qubit);
         this.rx(qubit,theta);
@@ -45,24 +34,24 @@ export class QuantumCircuit {
         this.rx(qubit,-pi/2);
     }
 
-    rz(qubit:i32, theta:f64):void {
+    public rz(qubit:i32, theta:f64):void {
         this.h(qubit);
         this.rx(qubit,theta);
         this.h(qubit);
     }
 
-    z(qubit:i32):void { this.rz(qubit,pi) }
+    public z(qubit:i32):void { this.rz(qubit,pi) }
 
-    y(qubit:i32):void {
+    public y(qubit:i32):void {
         this.rz(qubit,pi);
         this.x(qubit)
     }
 
-    h(qubit:i32):void { this.addGate(new Gate('h',qubit,0,0.0)); }
+    public h(qubit:i32):void { this.addGate(new Gate('h',qubit,0,0.0)); }
     
-    cx(qubit:i32,target:i32):void { this.addGate(new Gate('cx',qubit,target,0.0)); }
+    public cx(qubit:i32,target:i32):void { this.addGate(new Gate('cx',qubit,target,0.0)); }
 
-    m(qubit:i32,target:i32):void { this.addGate(new Gate('m',qubit,target,0.0)); }
+    public m(qubit:i32,target:i32):void { this.addGate(new Gate('m',qubit,target,0.0)); }
 }
 
 class Complex {
@@ -212,4 +201,4 @@ export class QuantumSimulator{
             }
         }
     }
-};
+}
