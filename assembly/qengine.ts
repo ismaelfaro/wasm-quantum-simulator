@@ -65,104 +65,107 @@ export class QuantumCircuit {
     m(qubit:i32,target:i32):void { this.addGate(new Gate('m',qubit,target,0.0)); }
 }
 
+class Complex {
+  constructor(public r: f64, public i:f64) {}
+}
+
 export class QuantumSimulator{
     circuit: Array<Gate>;
     Qubits: i32;
     Bits: i32;
-    stateVector: Array<Array<f64>>
+    stateVector: Array<Complex>
 
     constructor(quantumCircuit:QuantumCircuit){
         this.circuit = quantumCircuit.circuit;
         this.Qubits =  quantumCircuit.Qubits;
         this.Bits =  this.Qubits;
-        this.stateVector = [];
+        this.stateVector = new Array(Math.pow(2,this.Qubits) as i32);
+        this.initializeStateVector()
     }
 
     initializeStateVector():void  {
-        this.stateVector = new Array(Math.pow(2,this.Qubits));
-        this.stateVector.fill([0.0,0.0]);
-        this.stateVector[0]=[1.0,0.0];
+        for (let i = 0; i < this.stateVector.length; ++i) { this.stateVector[i] = new Complex(0.0,0.0) }
+        this.stateVector[0]=new Complex(1.0,0.0);
     }
 
-    
-    superpose(x:Array<f64>,y:Array<f64>):Array<Array<f64>>{
-        return [[r2*(x[0]+y[0]),r2*(x[1]+y[1])],
-                [r2*(x[0]-y[0]),r2*(x[1]-y[1])]];
+    superpose(x:Complex,y:Complex):Array<Complex> {
+        return [new Complex( r2*(x.r+y.r),r2*(x.i+y.i)),
+                new Complex( r2*(x.r-y.r),r2*(x.i-y.i))]
     };
 
-    turn(x:Array<f64>,y:Array<f64>,theta:f64):Array<Array<f64>>{
-        let part1:Array<f64> = [x[0]*Math.cos(theta/2)+y[1]*Math.sin(theta/2),x[1]*Math.cos(theta/2)-y[0]*Math.sin(theta/2)]
-        let part2:Array<f64> = [y[0]*Math.cos(theta/2)+x[1]*Math.sin(theta/2),y[1]*Math.cos(theta/2)-x[0]*Math.sin(theta/2)]
+    turn(x:Complex,y:Complex,theta:f64):Array<Complex> {
+        let part1:Complex = new Complex(x.r*Math.cos(theta/2)+y.i*Math.sin(theta/2),x.i*Math.cos(theta/2)-y.r*Math.sin(theta/2))
+        let part2:Complex = new Complex(y.r*Math.cos(theta/2)+x.i*Math.sin(theta/2),y.i*Math.cos(theta/2)-x.r*Math.sin(theta/2))
         return [part1, part2]
     };
 
-    probability(shots:i32):Array<String> {
-        let probabilities:Array<f64> = []
-        this.stateVector.forEach((value, index) =>{
-            let realPart = value[0];
-            let imaginaryPart = value[1];
-            probabilities.push(Math.pow(realPart,2)+Math.pow(imaginaryPart,2))
-        })
+    // probability(shots:i32):Array<String> {
+    //     let probabilities:Array<f64> = []
+    //     this.stateVector.forEach((value, index) =>{
+    //         let realPart = value[0];
+    //         let imaginaryPart = value[1];
+    //         probabilities.push(Math.pow(realPart,2)+Math.pow(imaginaryPart,2))
+    //     })
 
-        let output:Array<String> = []
-        for(let shotsCount=0; shotsCount < shots;shotsCount++){
-            let cumu =0
-            let un= true
-            let r = Math.random()
-            probabilities.forEach((value, index)=>{
-                cumu+=value
-                if(r < cumu && un){
-                    let raw_output = index.toString(2).padStart(this.Qubits, '0');
-                    output.push(raw_output)
-                    un=false;
-                }
-            })
-        }
-        return output;
-    }
+    //     let output:Array<String> = []
+    //     for(let shotsCount=0; shotsCount < shots;shotsCount++){
+    //         let cumu =0
+    //         let un= true
+    //         let r = Math.random()
+    //         probabilities.forEach((value, index)=>{
+    //             cumu+=value
+    //             if(r < cumu && un){
+    //                 let raw_output = index.toString(2).padStart(this.Qubits, '0');
+    //                 output.push(raw_output)
+    //                 un=false;
+    //             }
+    //         })
+    //     }
+    //     return output;
+    // }
 
-    stateVector2str():string {
-        let output = "";
-        this.stateVector.forEach((value, index) => {
-            let bits = index.toString(2).padStart(this.Qubits, '0');
-            output += bits +' '+ value[0].toString()+'+'+value[1].toString() +'j\n';
-        })
-        return output;
-    }
+    // stateVector2str():string {
+    //     let output = "";
+    //     this.stateVector.forEach((value, index) => {
+    //         let bits = index.toString(2).padStart(this.Qubits, '0');
+    //         output += bits +' '+ value[0].toString()+'+'+value[1].toString() +'j\n';
+    //     })
+    //     return output;
+    // }
 
-    statevector():string {
-      return this.stateVector2str();
-    }
+    //public statevector():string {
+    //   return this.stateVector2str();
+    // }
 
-    memory(shots:i32 = 1024):Array<String>{
-      return this.probability(shots);
-    }
+    //public memory(shots:i32 = 1024):Array<String>{
+    //   return this.probability(shots);
+    // }
 
-    counts(shots:i32 = 1024):Map<string,i32> {
-      let probabilities = this.probability(shots);
-      let counts = new Map<string,i32>()
-      probabilities.forEach((value:string, index)=>{
-          if(counts.has(value)){
-              counts.set(value,counts.get(value)+1)
-          } else {
-              counts.set(value,1)
-          }
-      });
-      return counts;
-    }
+    //public counts(shots:i32 = 1024):Map<string,i32> {
+    //   let probabilities = this.probability(shots);
+    //   let counts = new Map<string,i32>()
+    //   probabilities.forEach((value:string, index)=>{
+    //       if(counts.has(value)){
+    //           counts.set(value,counts.get(value)+1)
+    //       } else {
+    //           counts.set(value,1)
+    //       }
+    //   });
+    //   return counts;
+    // }
 
-    run(shots:i32 = 1024):void {
+    public run(shots:i32 = 1024):void {
       
-        this.initializeStateVector();
+        for (let i = 0; i < this.circuit.length; ++i) {
+            var gate:Gate = this.circuit[i]
 
-        this.circuit.forEach((gate:Gate)=>{
             if (['x','h','rx'].includes(gate.name)){
                 for(let contQubit=0; contQubit < Math.pow(2,gate.qubit); contQubit++){
                     for(let contState=0; contState < Math.pow(2,this.Qubits-gate.qubit-1); contState++){
-                        let b0=contQubit+Math.pow(2,gate.qubit+1)*contState;
-                        let b1=b0+Math.pow(2,gate.qubit);
+                        let b0=contQubit+Math.pow(2,gate.qubit+1)*contState as i32;
+                        let b1=(b0+Math.pow(2,gate.qubit)) as i32 ;
                         if(gate.name == 'x'){
-                            let temp = this.stateVector[b0]
+                            let temp:Complex = this.stateVector[b0]
                             this.stateVector[b0] = this.stateVector[b1]
                             this.stateVector[b1] = temp
                         }
@@ -190,13 +193,13 @@ export class QuantumSimulator{
                     }
                     for(let cx0=0;cx0<Math.pow(2,loopLimit[0]);cx0++){
                         for(let cx1=0;cx1<Math.pow(2,loopLimit[0]-loopLimit[1]-1);cx1++){
-                            for(let cx2=0;cx2<Math.pow(2,this.Qubits-loopLimit[1]-1);cx2++){
-                                let b0 =    cx0 + 
+                            for(let cx2=0;cx2<Math.pow(2,this.Qubits-(loopLimit[1] as i32)-1);cx2++){
+                                let b0 =    (cx0 + 
                                             Math.pow(2,loopLimit[0]+1)*cx1 +
                                             Math.pow(2,loopLimit[1]+1)*cx2 + 
-                                            Math.pow(2,gate.qubit);
+                                            Math.pow(2,gate.qubit)) as i32;
 
-                                let b1 = b0 + Math.pow(2,gate.target)
+                                let b1 = (b0 + Math.pow(2,gate.target) as i32)
 
                                 let temp = this.stateVector[b0]
                                 this.stateVector[b0] = this.stateVector[b1];
@@ -206,6 +209,6 @@ export class QuantumSimulator{
                     }     
                 }
             }
-        });
+        }
     }
 };
