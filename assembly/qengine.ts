@@ -5,13 +5,12 @@ class Complex {
   constructor(public r: f64, public i:f64) {}
 }
 
-// Define the Gate
 class Gate{
   constructor(public name:string, public qubit:i32, public target:i32, public theta:f64){}
+  toString():String{ return '['+this.name +','+ this.qubit.toString() +','+ this.target.toString() +','+ this.theta.toString() + ']'}
 }
 
-// Define the Quantum Circuit
-export class QuantumCircuit {
+class QuantumCircuit {
     Bits: i32;
     circuit: Array<Gate>;
 
@@ -24,9 +23,10 @@ export class QuantumCircuit {
     addGate(gate:Gate):void {this.circuit.push(gate)}
 
     public x(qubit:i32):void {this.addGate(new Gate('x',qubit,0,0.0))}
-
     public rx(qubit:i32, theta:f64):void { this.addGate(new Gate('rx',qubit, 0, theta))}
-
+    public h(qubit:i32):void { this.addGate(new Gate('h',qubit,0,0.0)); }
+    public cx(qubit:i32,target:i32):void { this.addGate(new Gate('cx',qubit,target,0.0)); }
+    
     public ry(qubit:i32, theta:f64):void {
         this.rx(qubit,pi/2);
         this.h(qubit);
@@ -34,28 +34,18 @@ export class QuantumCircuit {
         this.h(qubit);
         this.rx(qubit,-pi/2);
     }
-
     public rz(qubit:i32, theta:f64):void {
-        this.h(qubit)
-        this.rx(qubit,theta)
-        this.h(qubit)
+        this.h(qubit);
+        this.rx(qubit,theta);
+        this.h(qubit);
     }
-
     public z(qubit:i32):void { this.rz(qubit,pi) }
-
-    public y(qubit:i32):void {
-        this.rz(qubit,pi)
-        this.x(qubit)
-    }
-
-    public h(qubit:i32):void { this.addGate(new Gate('h',qubit,0,0.0)); }
+    public y(qubit:i32):void { this.rz(qubit,pi); this.x(qubit);}
     
-    public cx(qubit:i32,target:i32):void { this.addGate(new Gate('cx',qubit,target,0.0)); }
-
-    public m(qubit:i32,target:i32):void { this.addGate(new Gate('m',qubit,target,0.0)); }
+    toString():String {return this.circuit.toString()}
 }
 
-export class QuantumSimulator{
+class QuantumSimulator{
     circuit: Array<Gate>;
     Qubits: i32;
     Bits: i32;
@@ -64,8 +54,8 @@ export class QuantumSimulator{
     constructor(quantumCircuit:QuantumCircuit){
         this.circuit = quantumCircuit.circuit;
         this.Qubits =  quantumCircuit.Qubits;
-        this.Bits =  this.Qubits;
-        this.stateVector = new Array(Math.pow(2,this.Qubits) as i32);
+        this.Bits =  quantumCircuit.Qubits;
+        this.stateVector = new Array(Math.pow(2,quantumCircuit.Qubits) as i32);
         this.initializeStateVector()
     }
 
@@ -80,8 +70,10 @@ export class QuantumSimulator{
     };
 
     turn(x:Complex,y:Complex,theta:f64):Array<Complex> {
-        let part1:Complex = new Complex(x.r*Math.cos(theta/2)+y.i*Math.sin(theta/2),x.i*Math.cos(theta/2)-y.r*Math.sin(theta/2))
-        let part2:Complex = new Complex(y.r*Math.cos(theta/2)+x.i*Math.sin(theta/2),y.i*Math.cos(theta/2)-x.r*Math.sin(theta/2))
+        let part1:Complex = new Complex(x.r*Math.cos(theta/2)+y.i*Math.sin(theta/2),
+                                        x.i*Math.cos(theta/2)-y.r*Math.sin(theta/2));
+        let part2:Complex = new Complex(y.r*Math.cos(theta/2)+x.i*Math.sin(theta/2),
+                                        y.i*Math.cos(theta/2)-x.r*Math.sin(theta/2));
         return [part1, part2]
     };
 
@@ -133,19 +125,26 @@ export class QuantumSimulator{
       for(let i=0; i <  probabilities.length;i++){
       let value = probabilities[i]
           if(counts.has(value)){
-              counts.set(value,counts.get(value)+1)
+              counts.set(value,counts.get(value)+1);
           } else {
-              counts.set(value,1)
+              counts.set(value,1);
           }
       }
       return counts;
+    }
+
+    public toString():String{
+
+        let counts_result = this.counts();
+        let text = counts_result.keys.toString();
+        return  text
     }
 
     public run(shots:i32 = 1024):void {
       
         for (let i = 0; i < this.circuit.length; ++i) {
             var gate:Gate = this.circuit[i]
-
+            // one Gate instructions
             if (['x','h','rx'].includes(gate.name)){
                 for(let contQubit=0; contQubit < Math.pow(2,gate.qubit); contQubit++){
                     for(let contState=0; contState < Math.pow(2,this.Qubits-gate.qubit-1); contState++){
@@ -169,15 +168,13 @@ export class QuantumSimulator{
                     }   
                 }
             }else{
+                // two Gates Instructions
                 if(gate.name == 'cx'){
-                    let loopLimit = [];
+                    let loopLimit = [gate.qubit, gate.target];
                     if(gate.target<gate.qubit){
                         loopLimit[0] = gate.target;
                         loopLimit[1] = gate.qubit;
-                    } else {
-                        loopLimit[1] = gate.target;
-                        loopLimit[0] = gate.qubit;
-                    }
+                    } 
                     for(let cx0=0;cx0<Math.pow(2,loopLimit[0]);cx0++){
                         for(let cx1=0;cx1<Math.pow(2,loopLimit[0]-loopLimit[1]-1);cx1++){
                             for(let cx2=0;cx2<Math.pow(2,this.Qubits-(loopLimit[1] as i32)-1);cx2++){
@@ -198,4 +195,21 @@ export class QuantumSimulator{
             }
         }
     }
+}
+
+
+export function runQuantumSimulator(qubits: i32):String {
+    
+    let qc = new QuantumCircuit(qubits);
+    
+    qc.h(0)
+    qc.cx(0,1)
+    
+    // let result = qc.toString();
+
+    let qs = new QuantumSimulator(qc);
+    qs.run()
+    let result = qs.statevector()
+
+    return result
 }

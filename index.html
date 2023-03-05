@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <style>
+body {
+    font-family: 'Space Mono';font-size: 22px;
+}
+</style>
+
+</head>
+    <body>
+    <div>Quantum Simulator in WASM result</div>
+    <div id="result"></div>
+
+    <script type="module">
+        let result = document.getElementById("result")
+        import { runQuantumSimulator } from "./build/release.js";
+        let qresult = runQuantumSimulator(3);
+        result.innerText = qresult
+    </script>
+
+    </body>
+</html>

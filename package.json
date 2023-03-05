@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "node tests",
-    "asbuild:untouched": "asc assembly/qengine.ts --target debug",
-    "asbuild:optimized": "asc assembly/qengine.ts --target release",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized"
+    "asbuild:debug": "asc assembly/qengine.ts --target debug",
+    "asbuild:release": "asc assembly/qengine.ts --target release",
+    "asbuild": "npm run asbuild:release",
+    "start": "npx live-server ."
   },
   "repository": {
     "type": "git",
@@ -20,9 +21,9 @@
   },
   "homepage": "https://github.com/ismaelfaro/wasm-quantum-simulator#readme",
   "dependencies": {
-    "@assemblyscript/loader": "^0.19.22"
+    "@assemblyscript/loader": "^0.27.0"
   },
   "devDependencies": {
-    "assemblyscript": "^0.19.22"
+    "assemblyscript": "^0.27.0"
   }
 }
