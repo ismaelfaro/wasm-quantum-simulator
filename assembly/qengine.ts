@@ -204,8 +204,6 @@ export function runQuantumSimulator(qubits: i32):String {
     
     qc.h(0)
     qc.cx(0,1)
-    
-    // let result = qc.toString();
 
     let qs = new QuantumSimulator(qc);
     qs.run()

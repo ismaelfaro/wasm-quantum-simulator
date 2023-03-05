@@ -1,14 +1,14 @@
 # WebAssembly quantum-simulator
 Quantum Simulator in WebAssembly for Classical Developers 💻 
 
-This is a very basic implementation of a Quantum Simulator in AssemblyScript to learn the basic component.
+This is a very basic implementation of a Quantum Simulator in 200 lines of AssemblyScript to learn the basic component.
 Allow to create your Quantum circuits with the basic Quantum Gates, and you can execute it using plain python
 
 more info about AssemblyScript: https://www.assemblyscript.org/introduction.html
 
 # Components
 - Quantum Circuit Class:
-    - Quantum Gates: x, rx, ry, rz, z, y, h, cx, m
+    - Quantum Gates: x, rx, ry, rz, z, y, h, cx
 - Quanrtum Simulator Class: 
     - imput: Qcircuit
     - outputs: 
@@ -17,36 +17,33 @@ more info about AssemblyScript: https://www.assemblyscript.org/introduction.html
         - memory
 
 # Example:
-    // Create your quantum circuit with 5 Qubits
-    qc = new Qcircuit(5)
-    qc.x(0);
-    qc.rx(0,2);
-    qc.x(1)
-    qc.x(0)
-    qc.x(2)
-    qc.z(0)
-    qc.x(0)
+
+Modify the [assembly/qengine.ts](assembly/qengine.ts) after line 200 to add your circuit
+
+```
+    let qc = new QuantumCircuit(qubits);
     
-    qc.h(2)
     qc.h(0)
-    qc.h(1)
-    
-    qc.cx(0,1);
-    qc.cx(0,1);
-    qc.m(0,0);
-    
-    console.log(qc.circuit);
-    
-    // use the quantum simulator
-    qsimulator = new Qsimulator(qc)
-    statevector = qsimulator.run("statevector")
-    console.log(statevector)
-    counts = qsimulator.run("counts", 1024)
-    console.log(counts)
+    qc.cx(0,1)
 
+    let qs = new QuantumSimulator(qc);
+    qs.run()
+    let result = qs.statevector()
+```
 
+# Run:
+
+Install dependencies
+> npm install
+
+Compile to WASM
+> npm run asbuild 
+
+Run
+> npm start    
 
 # TODO:
+- better integration, sending the circuit from the host
 - Integrate with https://github.com/JavaFXpert/grok-bloch bloch sphere visualization
 
 # references
