@@ -34,13 +34,18 @@ Modify the [assembly/qengine.ts](assembly/qengine.ts) after line 200 to add your
 # Run:
 
 Install dependencies
-> npm install
+```  
+npm install
+```
 
 Compile to WASM
-> npm run asbuild 
-
+```
+npm run asbuild 
+```
 Run
-> npm start    
+```
+ npm start
+```
 
 # TODO:
 - better integration, sending the circuit from the host
