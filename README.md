@@ -9,8 +9,8 @@ more info about AssemblyScript: https://www.assemblyscript.org/introduction.html
 # Components
 - Quantum Circuit Class:
     - Quantum Gates: x, rx, ry, rz, z, y, h, cx
-- Quanrtum Simulator Class: 
-    - imput: Qcircuit
+- Quantum Simulator Class: 
+    - input: Qcircuit
     - outputs: 
         - statevector
         - counts
